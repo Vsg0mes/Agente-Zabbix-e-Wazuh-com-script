@@ -6,9 +6,6 @@
 # Verificação de instalação existente + Remoção automática do client.keys
 # =========================================
 
-
-
-
 set -e
 
 echo "=== Instalação do Wazuh Agent com TLS ==="

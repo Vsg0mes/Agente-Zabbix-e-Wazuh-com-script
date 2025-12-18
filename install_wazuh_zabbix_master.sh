@@ -3,7 +3,9 @@
 # =========================================
 # Script Principal - Instalação Wazuh + Zabbix
 # Executa ambos os agentes solicitando variáveis comuns apenas uma vez
-# =========================================
+# =========================================teste
+
+
 
 set -e
 

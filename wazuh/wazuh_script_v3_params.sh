@@ -32,6 +32,7 @@ check_wazuh_service() {
     fi
 }
 
+
 # Função para exibir informações do agente existente
 show_existing_agent_info() {
     echo "=== AGENTE WAZUH JÁ INSTALADO ==="
@@ -58,6 +59,50 @@ show_existing_agent_info() {
     fi
     
     echo
+}
+
+# Função para desinstalar o Wazuh Agent completamente
+uninstall_wazuh_agent() {
+    echo "=== DESINSTALANDO WAZUH AGENT ==="
+    
+    # Parar o serviço se estiver rodando
+    if check_wazuh_service; then
+        echo "Parando serviço wazuh-agent..."
+        systemctl stop wazuh-agent 2>/dev/null || true
+    fi
+    
+    # Desabilitar o serviço
+    echo "Desabilitando serviço wazuh-agent..."
+    systemctl disable wazuh-agent 2>/dev/null || true
+    
+    # Fazer backup das configurações antes de remover (opcional)
+    if [ -d "/var/ossec" ]; then
+        BACKUP_DIR="/tmp/wazuh_backup_$(date +%Y%m%d_%H%M%S)"
+        echo "Criando backup das configurações em $BACKUP_DIR..."
+        mkdir -p "$BACKUP_DIR"
+        cp -r /var/ossec/etc "$BACKUP_DIR/" 2>/dev/null || true
+        echo "✓ Backup criado em $BACKUP_DIR"
+    fi
+    
+    # Remover o pacote
+    echo "Removendo pacote wazuh-agent..."
+    if dpkg --purge wazuh-agent; then
+        echo "✓ Pacote wazuh-agent removido com sucesso"
+    else
+        echo "AVISO: Falha ao remover pacote, tentando forçar..."
+        dpkg --remove --force-remove-reinstreq wazuh-agent 2>/dev/null || true
+    fi
+    
+    # Limpar diretórios residuais
+    echo "Limpando diretórios residuais..."
+    rm -rf /var/ossec 2>/dev/null || true
+    
+    # Limpar cache do apt
+    apt-get autoremove -y 2>/dev/null || true
+    
+    echo "✓ Wazuh Agent desinstalado completamente"
+    echo
+    return 0
 }
 
 # Função para remover client.keys com backup
@@ -171,6 +216,7 @@ echo "Manager: $WAZUH_MANAGER"
 echo "Agente: $WAZUH_AGENT_NAME"
 echo "Grupo: $WAZUH_AGENT_GROUP"
 
+
 # =========================================
 # VERIFICAÇÃO DE INSTALAÇÃO EXISTENTE
 # =========================================
@@ -178,24 +224,47 @@ if check_wazuh_installation; then
     echo "Detectado Wazuh Agent já instalado no sistema."
     show_existing_agent_info
     
-    echo "Deseja reconfigurar o agente existente? (s/n)"
-    read -p "Resposta: " RECONFIGURE
+    echo "Escolha uma opção:"
+    echo "(1) Cancelar/Sair"
+    echo "(2) Reconfigurar o agente existente"
+    echo "(3) Desinstalar e instalar um novo agente"
+    echo
+    read -p "Opção (1-3): " OPTION
     
-    if [[ "$RECONFIGURE" != "s" && "$RECONFIGURE" != "S" ]]; then
-        echo "Operação cancelada pelo usuário."
-        exit 0
-    fi
-    
-    echo "Continuando com a reconfiguração..."
-    SKIP_INSTALLATION=true
-    
-    # =========================================
-    # REMOVER CLIENT.KEYS PARA NOVA CONFIGURAÇÃO
-    # =========================================
-    if ! remove_client_keys_safely; then
-        echo "ERRO: Falha na remoção do client.keys. Abortando reconfiguração."
-        exit 1
-    fi
+    case $OPTION in
+        1)
+            echo "Operação cancelada pelo usuário."
+            exit 0
+            ;;
+        2)
+            echo "Continuando com a reconfiguração do agente existente..."
+            SKIP_INSTALLATION=true
+            
+            # =========================================
+            # REMOVER CLIENT.KEYS PARA NOVA CONFIGURAÇÃO
+            # =========================================
+            if ! remove_client_keys_safely; then
+                echo "ERRO: Falha na remoção do client.keys. Abortando reconfiguração."
+                exit 1
+            fi
+            ;;
+        3)
+            echo "Continuando com a desinstalação e nova instalação..."
+            
+            # Desinstalar agente atual
+            if ! uninstall_wazuh_agent; then
+                echo "ERRO: Falha na desinstalação do agente atual. Abortando."
+                exit 1
+            fi
+            
+            # Definir para fazer nova instalação
+            SKIP_INSTALLATION=false
+            ;;
+        *)
+            echo "Opção inválida. Execute o script novamente."
+            exit 1
+            ;;
+    esac
     
 else
     echo "Wazuh Agent não encontrado. Prosseguindo com a instalação."

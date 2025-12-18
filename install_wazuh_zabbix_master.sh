@@ -47,6 +47,7 @@ make_executable() {
     fi
 }
 
+
 # =========================================
 # VERIFICAR PRÉ-REQUISITOS
 # =========================================
@@ -60,6 +61,51 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 echo "✓ Executando com privilégios de sudo"
+
+# =========================================
+# PERGUNTA INICIAL - TIPO DE OPERAÇÃO
+# =========================================
+echo
+echo "=== TIPO DE OPERAÇÃO ==="
+echo "Este script pode realizar diferentes operações:"
+echo
+echo "1. Prosseguir com nova instalação"
+echo "2. Fazer alterações em agentes já instalados (gerenciador)"
+echo
+read -p "Escolha o tipo de operação (1-2): " OPERATION_TYPE
+
+case "$OPERATION_TYPE" in
+    1)
+        echo "Continuando com nova instalação..."
+        ;;
+    2)
+        echo "Iniciando gerenciador de configuração..."
+        
+        # Verificar se o script de gerenciamento existe
+        MANAGE_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/manage_agents_config.sh"
+        
+        if [[ ! -f "$MANAGE_SCRIPT" ]]; then
+            echo "ERRO: Script de gerenciamento não encontrado: $MANAGE_SCRIPT"
+            echo "Certifique-se de que o arquivo manage_agents_config.sh está no mesmo diretório."
+            exit 1
+        fi
+        
+        # Tornar o script executável se necessário
+        if [[ ! -x "$MANAGE_SCRIPT" ]]; then
+            chmod +x "$MANAGE_SCRIPT"
+            echo "✓ Script de gerenciamento tornado executável"
+        fi
+        
+        # Executar o script de gerenciamento
+        echo "Executando: $MANAGE_SCRIPT"
+        echo
+        exec "$MANAGE_SCRIPT"
+        ;;
+    *)
+        echo "Opção inválida. Execute o script novamente e escolha 1 ou 2."
+        exit 1
+        ;;
+esac
 
 # Definir caminhos dos scripts
 WAZUH_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/wazuh/wazuh_script_v3_params.sh"

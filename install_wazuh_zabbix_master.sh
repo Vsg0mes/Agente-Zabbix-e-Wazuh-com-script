@@ -62,7 +62,7 @@ fi
 echo "✓ Executando com privilégios de sudo"
 
 # Definir caminhos dos scripts
-WAZUH_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/wazuh/wazuh_quefunfa_v3_params.sh"
+WAZUH_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/wazuh/wazuh_script_v3_params.sh"
 ZABBIX_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/zabbix/install_zabbix_agent_fixed_params.sh"
 
 # Verificar se os scripts existem

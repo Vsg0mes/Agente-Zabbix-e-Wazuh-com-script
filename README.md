@@ -47,8 +47,8 @@ git clone https://github.com/seu-usuario/install-zabbix-wazuh.git
 ```
 ### Dar permissão de execução
 ```bash
-chmod +x install_zabbix_wazuh_agents.sh
+chmod +x install_wazuh_zabbix_master.sh
 ```
 ### Executar o script
 ```bash
-sudo ./install_zabbix_wazuh_agents.sh
+sudo ./install_wazuh_zabbix_master.sh

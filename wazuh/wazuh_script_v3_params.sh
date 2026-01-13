@@ -325,7 +325,7 @@ if [ ! -d "$OSSEC_DIR" ]; then
 fi
 
 # =========================================
-# COLETA DO CERTIFICADO (MODELO ZABBIX)
+# COLETA DO CERTIFICADO
 # =========================================
 echo
 echo "=== Certificado do Agente (sslagent.cert) ==="
@@ -350,7 +350,7 @@ echo "$CERT_CONTENT" > "$CERT_FILE"
 echo "✓ Certificado salvo em $CERT_FILE"
 
 # =========================================
-# COLETA DA CHAVE PRIVADA (MODELO ZABBIX)
+# COLETA DA CHAVE PRIVADA
 # =========================================
 echo
 echo "=== Chave Privada do Agente (sslagent.key) ==="

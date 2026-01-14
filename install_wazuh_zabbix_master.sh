@@ -260,6 +260,7 @@ if $WAZUH_SUCCESS && $ZABBIX_SUCCESS; then
     echo
     echo "Issuer:  CN=CARootCA,OU=CA,O=CAZabbix,ST=SP,C=BR"
     echo "Subject: CN=$HOSTNAME,OU=Agent,O=CAZabbix,ST=SP,C=BR"
+    echo
     echo "3. Status dos serviços:"
     echo "   - Wazuh: systemctl status wazuh-agent"
     echo "   - Zabbix: systemctl status zabbix-agent2"

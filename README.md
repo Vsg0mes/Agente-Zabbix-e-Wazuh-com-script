@@ -43,7 +43,7 @@ Projetado para ambientes de produção, VMs e cloud.
 
 ### 1. Clonar o repositório
 ```bash
-git clone https://github.com/seu-usuario/install-zabbix-wazuh.git
+git clone https://github.com/<seu-usuario>/install-zabbix-wazuh.git
 ```
 ### Dar permissão de execução
 ```bash

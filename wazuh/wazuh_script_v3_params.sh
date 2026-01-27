@@ -419,6 +419,13 @@ echo "✓ Configuração do ossec.conf atualizada"
 # =========================================
 # REINICIAR AGENTE
 # =========================================
+echo "Habilitando wazuh-agent no boot..."
+
+if ! systemctl enable wazuh-agent; then
+    echo "ERRO: Falha ao habilitar o wazuh-agent no boot"
+    exit 1
+fi
+
 echo "Iniciando/reiniciando wazuh-agent..."
 
 if ! systemctl start wazuh-agent; then

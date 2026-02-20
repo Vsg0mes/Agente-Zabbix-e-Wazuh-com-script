@@ -399,6 +399,7 @@ echo "✓ Backup da configuração criado"
 # Remove configs antigas
 sed -i '/authorization_pass_path/d' "$OSSEC_CONF"
 sed -i '/<client>/,/<\/client>/d' "$OSSEC_CONF"
+sed -i '/<!-- codex-agent-group-label-start -->/,/<!-- codex-agent-group-label-end -->/d' "$OSSEC_CONF"
 
 # Insere nova configuração
 sed -i "/<\/ossec_config>/i \
@@ -412,7 +413,12 @@ sed -i "/<\/ossec_config>/i \
     <agent_certificate_path>${CERT_FILE}</agent_certificate_path>\n\
     <agent_key_path>${KEY_FILE}</agent_key_path>\n\
   </enrollment>\n\
-</client>\n" "$OSSEC_CONF"
+</client>\n\
+<!-- codex-agent-group-label-start -->\n\
+<labels>\n\
+  <label key=\"agent_group\">${WAZUH_AGENT_GROUP}</label>\n\
+</labels>\n\
+<!-- codex-agent-group-label-end -->\n" "$OSSEC_CONF"
 
 echo "✓ Configuração do ossec.conf atualizada"
 
